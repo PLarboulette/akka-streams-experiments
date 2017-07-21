@@ -1,0 +1,8 @@
+
+
+
+object FlatteningStream extends App {
+
+
+
+}
