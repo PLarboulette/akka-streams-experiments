@@ -1,6 +1,5 @@
 package models
-
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 object Models {
 
@@ -22,10 +21,16 @@ object Models {
     People("4","Mrs Z", 27, List.empty)
   )
 
-  def citySyncData : List[City] = cities
-  def citAsyncData : Future[List[City]] = Future(cities)
+  def citySyncData (implicit ec : ExecutionContext) : List[City] = cities
+  def citAsyncData (implicit ec : ExecutionContext): Future[List[City]] = Future(cities)
 
-  def peopleSyncData : List[People] = peoples
-  def peopleAsyncData : Future[List[People]] = Future(peoples)
+  def peopleSyncData (implicit ec : ExecutionContext) : List[People] = peoples
+  def peopleAsyncData (implicit ec : ExecutionContext) : Future[List[People]] = Future(peoples)
+
+  def convertIdToCity (id : String) (implicit ec : ExecutionContext) : Option[City] = cities.find(_.id == id)
+  def convertCityToId (name : String) : Option[String] = cities.find(_.name == name).map(_.id)
+
+  def convertIdToPeople (id : String) (implicit ec : ExecutionContext) : Option[People] = peoples.find(_.id == id)
+  def convertPeopleToId (name : String) : Option[String] = peoples.find(_.name == name).map(_.id)
 
 }
