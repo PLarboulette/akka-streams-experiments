@@ -1,12 +1,53 @@
 package models
+import akka.NotUsed
+import akka.stream.scaladsl.{Flow, Framing}
+import akka.util.ByteString
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsPath, Json, Reads, Writes}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 object Models {
 
-
   case class City (id : String, name : String, monuments : List[String])
 
-  case class People (id : String, name : String, age : Int, cities : List[String] )
+  object City {
+    implicit val cityReads: Reads[City] = (
+      (JsPath \ "id").read[String] and
+        (JsPath \ "name").read[String] and
+        (JsPath \ "monuments").read[List[String]]
+      )(City.apply _)
+
+    implicit val cityWrites = new Writes[City] {
+      def writes(city: City) = Json.obj(
+        "id" -> city.id,
+        "name" -> city.name,
+        "monuments" -> Json.toJson(city.monuments)
+      )
+    }
+  }
+
+  case class People (id : String, name : String, age : Int, cities : List[String])
+
+  object People {
+
+    implicit val peopleReads: Reads[People] = (
+      (JsPath \ "id").read[String] and
+        (JsPath \ "name").read[String] and
+      (JsPath \ "age").read[Int] and
+        (JsPath \ "cities").read[List[String]]
+      )(People.apply _)
+
+    implicit val peopleWrites = new Writes[People] {
+      def writes(people: People) = Json.obj(
+        "id" -> people.id,
+        "name" -> people.name,
+        "age" -> people.age,
+        "cities" -> Json.toJson(people.cities)
+      )
+    }
+  }
+
 
   val cities = List(
     City("1", "London", List("Big Ben", "Buckingham", "Tower Bridge")),
@@ -32,5 +73,21 @@ object Models {
 
   def convertIdToPeople (id : String) (implicit ec : ExecutionContext) : Option[People] = peoples.find(_.id == id)
   def convertPeopleToId (name : String) : Option[String] = peoples.find(_.name == name).map(_.id)
+
+  /**
+    * A flow that allows you to connect a file based upstream stage and easily convert it to a People
+    * @return a stream of Tweets
+    *
+    */
+
+  def byteStringToPeopleFlow(maxLine: Int): Flow[ByteString, People, NotUsed] = {
+    Framing.delimiter(ByteString("\n"), maxLine)
+      .map(_.decodeString("UTF8"))
+      .map(Json.parse)
+      .map ( _.as[People])
+  }
+
+
+
 
 }
