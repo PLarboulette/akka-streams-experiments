@@ -1,7 +1,4 @@
 package models
-import akka.NotUsed
-import akka.stream.scaladsl.{Flow, Framing}
-import akka.util.ByteString
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Json, Reads, Writes}
 
@@ -74,18 +71,7 @@ object Models {
   def convertIdToPeople (id : String) (implicit ec : ExecutionContext) : Option[People] = peoples.find(_.id == id)
   def convertPeopleToId (name : String) : Option[String] = peoples.find(_.name == name).map(_.id)
 
-  /**
-    * A flow that allows you to connect a file based upstream stage and easily convert it to a People
-    * @return a stream of Tweets
-    *
-    */
 
-  def byteStringToPeopleFlow(maxLine: Int): Flow[ByteString, People, NotUsed] = {
-    Framing.delimiter(ByteString("\n"), maxLine)
-      .map(_.decodeString("UTF8"))
-      .map(Json.parse)
-      .map ( _.as[People])
-  }
 
 
 

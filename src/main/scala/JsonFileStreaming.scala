@@ -16,7 +16,7 @@ object JsonFileStreaming extends App{
 
   def readPeopleFile (filepath : String) : Unit = {
     FileIO.fromPath(Paths.get(filepath))
-      .via(Models.byteStringToPeopleFlow(1024))
+      .via(Flows.byteStringToPeopleFlow(1024))
       .throttle(elements = 1, per = 5.second, maximumBurst = 1, mode = ThrottleMode.shaping)
       .runForeach(println)
       .onComplete(_ => system.terminate())
