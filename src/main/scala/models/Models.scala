@@ -34,7 +34,7 @@ object Models {
     implicit val peopleReads: Reads[People] = (
       (JsPath \ "id").read[String] and
         (JsPath \ "name").read[String] and
-      (JsPath \ "age").read[Int] and
+        (JsPath \ "age").read[Int] and
         (JsPath \ "cities").read[List[String]]
       )(People.apply _)
 
