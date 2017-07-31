@@ -9,7 +9,8 @@ libraryDependencies++=Seq(
   "com.typesafe.akka" %% "akka-testkit" % "2.5.3" % Test,
   "com.typesafe.akka" %% "akka-stream" % "2.5.3",
   "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.3" % Test,
-  "com.typesafe.play" % "play-json_2.12" % "2.6.2"
+  "com.typesafe.play" % "play-json_2.12" % "2.6.2",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0"
 )
 
 resolvers ++= Seq(

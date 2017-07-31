@@ -3,6 +3,7 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.{ActorAttributes, ActorMaterializer, Supervision, ThrottleMode}
 import akka.stream.scaladsl._
+import models.Models
 
 import scala.concurrent.{Future, TimeoutException}
 import scala.concurrent.duration._
@@ -102,7 +103,7 @@ object Main extends App {
   }
 
 
-  def terminatingStream () = {
+  def terminatingStream () : Unit = {
     Source
       .single(1)
       .runWith(Sink.ignore) // returns a Future[Done]
@@ -188,31 +189,28 @@ object Main extends App {
 
   }
 
+  // No interest but it's just an example
+  def zipSource () : Unit = {
+
+    val source1 = Source(Models.peopleSyncData)
+    val source2 = Source(Models.citySyncData)
+
+    source1
+      .zipWith(source2)(
+        (source1, source2) =>
+          if (source1.cities.contains(source2.id))
+            println(s"$source1 --> $source2")
+      )
+      .throttle(1, 3.second, 1, ThrottleMode.shaping)
+      .runWith(Sink.ignore)
+      .onComplete(_ => system.terminate())
+  }
+
+  / /zipSource()
+
+
 }
 
- /* source
-    .mapConcat(_.list)
-    .map(_.toUpperCase())
-    .zipWith(source2) ((source1, source2) => s"$source1 --> $source2")
-    .throttle(1, 3.second, 1, ThrottleMode.shaping)
-    .runForeach(println).onComplete(
-    t =>
-      system.terminate()
-  )*/
-
-/*val source : Source[Hero, NotUsed] = Source(
- Hero("Source 1 - 1", "Dark Vador", List("1 - 1", "1 - 2")) ::
-   Hero("Source 1 - 1", "Dark Sidious", List("2 - 1", " 2- 2")) ::
-   Hero("Source 1 - 1", "Dark Maul", List("1 - 3")) ::
-   Nil
-)
-
-val source2 : Source[Hero, NotUsed] = Source(
- Hero("Source 2 - 1", "Luke", List("4 - 1")) ::
-   Hero("Source 2 - 2", "Leïa", List("5 - 2")) ::
-   Nil
-)
-*/
 
 
 
