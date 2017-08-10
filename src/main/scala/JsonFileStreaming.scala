@@ -31,7 +31,4 @@ object JsonFileStreaming extends App{
   }
 
   readPeopleFile("out.json")
-
-
-
 }

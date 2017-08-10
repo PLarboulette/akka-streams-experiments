@@ -12,5 +12,4 @@ object Flows {
       .map(Json.parse)
       .map ( _.as[People])
   }
-
 }

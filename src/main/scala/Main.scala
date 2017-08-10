@@ -117,7 +117,7 @@ object Main extends App {
       .watchTermination() { (_, done) =>
         done.onComplete {
           case Success(_)     => println("Stream completed successfully")
-          case Failure(error) => println("Stream failed with error ${error.getMessage}")
+          case Failure(error) => println(s"Stream failed with error ${error.getMessage}")
         }
       }
       .runWith(Sink.ignore)
@@ -206,8 +206,7 @@ object Main extends App {
       .onComplete(_ => system.terminate())
   }
 
-  / /zipSource()
-
+  // zipSource()
 
 }
 
